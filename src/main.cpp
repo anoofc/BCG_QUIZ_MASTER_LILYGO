@@ -19,6 +19,9 @@ Preferences preferences;  // Preferences for storing data
 WiFiUDP Udp;
 
 IPAddress ip, subnet, gateway;
+IPAddress PC_IP(192, 168, 1, 200); // Default PC IP
+
+
 uint16_t inPort = 7001;
 uint16_t outPort = 7000;
 
@@ -93,6 +96,18 @@ void loadNetworkConfig() {
   preferences.end();
 }
 
+void resolumeOSCSend(){
+  char address[40];  // increase buffer size
+  snprintf(address, sizeof(address), "/column/1/connect");
+  OSCMessage msg(address);
+  msg.add(1);
+  Udp.beginPacket(PC_IP, outPort);
+  msg.send(Udp);
+  Udp.endPacket();
+  msg.empty();
+  if (DEBUG){ Serial.println("Resolume OSC message sent."); }
+}
+
 void oscSend(int value) {
   char address[40];  // increase buffer size
   snprintf(address, sizeof(address), "/device/");
@@ -119,7 +134,7 @@ void clearOSCSend(int value) {
 
 void processOSCData(uint8_t data_In){
   if (DEBUG) { Serial.printf("Processing OSC data: %d\n", data_In); }
-  if (!status){ oscSend(data_In); status = 1; if (DEBUG){ Serial.println("OSC message sent."); }} // Send OSC message if status is true
+  if (!status){ oscSend(data_In); resolumeOSCSend(); status = 1; if (DEBUG){ Serial.println("OSC message sent."); }} // Send OSC message if status is true
 
 }
 
