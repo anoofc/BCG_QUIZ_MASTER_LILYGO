@@ -98,7 +98,7 @@ void loadNetworkConfig() {
 
 void resolumeOSCSend(){
   char address[40];  // increase buffer size
-  snprintf(address, sizeof(address), "/column/1/connect");
+  snprintf(address, sizeof(address), "/composition/columns/1/connect");
   OSCMessage msg(address);
   msg.add(1);
   Udp.beginPacket(PC_IP, outPort);
